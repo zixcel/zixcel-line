@@ -1,0 +1,6 @@
+schema = "zixcel://line/config/v1"
+config_id = "site-notifications"
+channel_ref = "channel:site-notifications"
+secret_ref = "secret://line/channels/site-observer"
+data_sets = ["delivery-statistics", "webhook-event-metadata"]
+
