@@ -1,0 +1,111 @@
+{
+  "repository": "zixcel/zixcel-line",
+  "purpose": "Check a LINE metadata integration configuration and produce a plan before implementing or enabling the connection.",
+  "responsibility_boundary": "Own the named reusable integration/data mechanism. Product roles/UI and operational approvals stay with consumers; transport/custody reuse managed Crowsi components where capabilities fit. Planning-only APIs must remain clearly distinguished from implemented external operations.",
+  "packages": [
+    {
+      "manifest": "Cargo.toml",
+      "package": "zixcel-line",
+      "ecosystem": "rust",
+      "description": "Planning-only LINE service connector boundary for Zixcel",
+      "interfaces": {
+        "lib": "src/lib.rs",
+        "features": {},
+        "bins": [],
+        "public_modules": [],
+        "public_reexports": [
+          "boundary::ConnectorError",
+          "config::{ConnectorConfig, parse_config}",
+          "plan::{ConnectorPlan, PlanStep, build_plan}",
+          "reports::{\n    CapabilityReport, DoctorReport, ValidationReport, capabilities, doctor, validation_report,\n}"
+        ],
+        "implicit_bins": []
+      },
+      "declared_commands": {}
+    }
+  ],
+  "schema_definitions": [],
+  "test_sources": [
+    "src/boundary.rs",
+    "src/unit_tests.rs",
+    "tests/connector.rs"
+  ],
+  "example_sources": [
+    "examples/config.toml"
+  ],
+  "workflow_definitions": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "jobs": [
+        {
+          "job": "test",
+          "condition": null,
+          "runs_on": "ubuntu-latest",
+          "steps": [
+            {
+              "name": null,
+              "run": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "condition": null
+            },
+            {
+              "name": "Install declared Rust toolchain",
+              "run": "rustup toolchain install 1.97 --profile minimal",
+              "uses": null,
+              "condition": null
+            },
+            {
+              "name": "Test default features",
+              "run": "cargo +1.97 test --locked",
+              "uses": null,
+              "condition": null
+            },
+            {
+              "name": "Test all features",
+              "run": "cargo +1.97 test --locked --all-features",
+              "uses": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/oss-policy.yml",
+      "jobs": [
+        {
+          "job": "repository-policy",
+          "condition": null,
+          "runs_on": "ubuntu-latest",
+          "steps": [
+            {
+              "name": null,
+              "run": null,
+              "uses": "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+              "condition": null
+            },
+            {
+              "name": "Verify repository policy",
+              "run": "python3 .github/oss-policy-check.py",
+              "uses": null,
+              "condition": null
+            },
+            {
+              "name": "Verify policy regression tests",
+              "run": "cd .github && python3 -m unittest discover -s policy-tests",
+              "uses": null,
+              "condition": null
+            },
+            {
+              "name": "Check policy types",
+              "run": "python3 -m venv \"$RUNNER_TEMP/policy-types\"\n\"$RUNNER_TEMP/policy-types/bin/pip\" install -r .github/policy/requirements.txt\n\"$RUNNER_TEMP/policy-types/bin/mypy\" --strict .github/policy .github/oss-policy-check.py .github/policy-tests\n",
+              "uses": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "evidence_policy": "Declarations and source paths are not proof of an executed acceptance. Exact CI head and result are recorded separately. No live accounts or production acceptance is inferred."
+}
